@@ -90,14 +90,16 @@ func isGeneratedFile(path string) (bool, error) {
 }
 
 type ApplyCommand struct {
-	filter string
-	input  string
+	filter    string
+	input     string
+	notInvert bool
 }
 
 func (c *ApplyCommand) FlagSet() *flag.FlagSet {
 	fs := flag.NewFlagSet("apply", flag.ExitOnError)
 	fs.StringVar(&c.filter, "f", "filter.gob", "filter binary path")
 	fs.StringVar(&c.input, "i", "-", "input file")
+	fs.BoolVar(&c.notInvert, "nv", false, "not invert")
 	return fs
 }
 
@@ -120,7 +122,7 @@ func (c *ApplyCommand) Run(args []string) error {
 	s := bufio.NewScanner(r)
 	for s.Scan() {
 		line := s.Text()
-		if !m.Contains([]rune(line)) {
+		if m.Contains([]rune(line)) == c.notInvert {
 			fmt.Println(line)
 		}
 	}
