@@ -31,6 +31,8 @@ Usage of apply:
     	filter binary path (default "filter.gob")
   -i string
     	input file (default "-")
+  -nv
+    	not invert
 ```
 
 ## Author
