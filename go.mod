@@ -1,7 +1,9 @@
 module github.com/orisano/genfilter
 
+go 1.14
+
 require (
 	github.com/anknown/darts v0.0.0-20151216065714-83ff685239e6
 	github.com/orisano/subflag v0.0.0-20190205181026-fb8dac85b4ed
-	github.com/pkg/errors v0.8.1
+	golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543
 )

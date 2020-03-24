@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/anknown/darts"
-	"github.com/pkg/errors"
+	"golang.org/x/xerrors"
 )
 
 const (
@@ -13,17 +13,17 @@ const (
 	RootState = 1
 )
 
-type Machine struct {
+type Filter struct {
 	Trie    *godarts.DoubleArrayTrie
 	Failure []int
 	Output  map[int]struct{}
 }
 
-func buildMachine(paths [][]rune) (*Machine, error) {
+func buildFilter(paths [][]rune) (*Filter, error) {
 	var d godarts.Darts
 	dat, llt, err := d.Build(paths)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to build double array")
+		return nil, xerrors.Errorf("build double array: %w", err)
 	}
 
 	output := make(map[int]struct{}, len(d.Output))
@@ -36,7 +36,7 @@ func buildMachine(paths [][]rune) (*Machine, error) {
 		failure[c.Base] = godarts.ROOT_NODE_BASE
 	}
 
-	m := &Machine{
+	m := &Filter{
 		Trie:    dat,
 		Failure: failure,
 		Output:  output,
@@ -68,21 +68,21 @@ func buildMachine(paths [][]rune) (*Machine, error) {
 	return m, nil
 }
 
-func loadMachine(path string) (*Machine, error) {
+func loadFilter(path string) (*Filter, error) {
 	f, err := os.Open(path)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to open machine")
+		return nil, xerrors.Errorf("open filter: %w", err)
 	}
 	defer f.Close()
 
-	var m Machine
+	var m Filter
 	if err := gob.NewDecoder(f).Decode(&m); err != nil {
-		return nil, errors.Wrap(err, "failed to decode machine")
+		return nil, xerrors.Errorf("decode filter: %w", err)
 	}
 	return &m, nil
 }
 
-func (m *Machine) g(inState int, input rune) int {
+func (m *Filter) g(inState int, input rune) int {
 	if inState == FailState {
 		return RootState
 	}
@@ -96,7 +96,7 @@ func (m *Machine) g(inState int, input rune) int {
 	return FailState
 }
 
-func (m *Machine) Contains(r []rune) bool {
+func (m *Filter) Contains(r []rune) bool {
 	state := RootState
 	for _, c := range r {
 		for {
