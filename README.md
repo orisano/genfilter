@@ -36,7 +36,7 @@ Usage of apply:
 ```
 
 ## Author
-Nao YONASHIRO (@orisano)
+Nao Yonashiro (@orisano)
 
 ## License
 MIT
