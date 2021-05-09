@@ -2,10 +2,10 @@ package main
 
 import (
 	"encoding/gob"
+	"fmt"
 	"os"
 
 	"github.com/anknown/darts"
-	"golang.org/x/xerrors"
 )
 
 const (
@@ -23,7 +23,7 @@ func buildFilter(paths [][]rune) (*Filter, error) {
 	var d godarts.Darts
 	dat, llt, err := d.Build(paths)
 	if err != nil {
-		return nil, xerrors.Errorf("build double array: %w", err)
+		return nil, fmt.Errorf("build double array: %w", err)
 	}
 
 	output := make(map[int]struct{}, len(d.Output))
@@ -71,13 +71,13 @@ func buildFilter(paths [][]rune) (*Filter, error) {
 func loadFilter(path string) (*Filter, error) {
 	f, err := os.Open(path)
 	if err != nil {
-		return nil, xerrors.Errorf("open filter: %w", err)
+		return nil, fmt.Errorf("open filter: %w", err)
 	}
 	defer f.Close()
 
 	var m Filter
 	if err := gob.NewDecoder(f).Decode(&m); err != nil {
-		return nil, xerrors.Errorf("decode filter: %w", err)
+		return nil, fmt.Errorf("decode filter: %w", err)
 	}
 	return &m, nil
 }

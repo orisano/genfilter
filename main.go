@@ -12,7 +12,6 @@ import (
 	"strings"
 
 	"github.com/orisano/subflag"
-	"golang.org/x/xerrors"
 )
 
 type BuildCommand struct {
@@ -44,7 +43,7 @@ func (c *BuildCommand) Run(args []string) error {
 		}
 		ok, err := isGeneratedFile(path)
 		if err != nil {
-			return xerrors.Errorf("check file: %w", err)
+			return fmt.Errorf("check file: %w", err)
 		}
 		if ok {
 			paths = append(paths, []rune(path))
@@ -52,22 +51,22 @@ func (c *BuildCommand) Run(args []string) error {
 		return nil
 	})
 	if err != nil {
-		return xerrors.Errorf("scan generated files: %w", err)
+		return fmt.Errorf("scan generated files: %w", err)
 	}
 
 	m, err := buildFilter(paths)
 	if err != nil {
-		return xerrors.Errorf("build filter: %w", )
+		return fmt.Errorf("build filter: %w", )
 	}
 
 	f, err := os.Create(c.output)
 	if err != nil {
-		return xerrors.Errorf("create filter file: %w", err)
+		return fmt.Errorf("create filter file: %w", err)
 	}
 	defer f.Close()
 
 	if err := gob.NewEncoder(f).Encode(m); err != nil {
-		return xerrors.Errorf("encode filter: %w", err)
+		return fmt.Errorf("encode filter: %w", err)
 	}
 
 	return nil
@@ -76,13 +75,13 @@ func (c *BuildCommand) Run(args []string) error {
 func isGeneratedFile(path string) (bool, error) {
 	f, err := os.Open(path)
 	if err != nil {
-		return false, xerrors.Errorf("open file: %w", err)
+		return false, fmt.Errorf("open file: %w", err)
 	}
 	defer f.Close()
 	s := bufio.NewScanner(f)
 	if !s.Scan() {
 		if err := s.Err(); err != nil {
-			return false, xerrors.Errorf("read head: %w", err)
+			return false, fmt.Errorf("read head: %w", err)
 		}
 		return false, nil
 	}
@@ -106,7 +105,7 @@ func (c *ApplyCommand) FlagSet() *flag.FlagSet {
 func (c *ApplyCommand) Run(args []string) error {
 	m, err := loadFilter(c.filter)
 	if err != nil {
-		return xerrors.Errorf("load filter: %w", err)
+		return fmt.Errorf("load filter: %w", err)
 	}
 	var r io.Reader
 	if c.input == "-" {
@@ -114,7 +113,7 @@ func (c *ApplyCommand) Run(args []string) error {
 	} else {
 		f, err := os.Open(c.input)
 		if err != nil {
-			return xerrors.Errorf("open input: %w", err)
+			return fmt.Errorf("open input: %w", err)
 		}
 		defer f.Close()
 		r = f
@@ -127,7 +126,7 @@ func (c *ApplyCommand) Run(args []string) error {
 		}
 	}
 	if err := s.Err(); err != nil {
-		return xerrors.Errorf("read lines: %w", err)
+		return fmt.Errorf("read lines: %w", err)
 	}
 	return nil
 }
